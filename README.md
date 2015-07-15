@@ -16,6 +16,12 @@ https://virtualenv.pypa.io/en/latest/
 ## Debugging
 drop a gpx file here http://nationalmap.gov.au/
 
+## Visualization Sites
+* http://www.doarama.com/ 
+* http://www.gpsvisualizer.com/
+* http://maplorer.com/view_gpx.html
+* http://veloroutes.org/upload/ (slow)
+
 ## References
 * https://developers.google.com/kml/articles/csvtokml
 * http://www.doarama.com/api/0.2/docs
