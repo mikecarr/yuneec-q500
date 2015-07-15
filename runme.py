@@ -63,18 +63,23 @@ def createTrack(kmlDoc, row, order,line_number):
     last_lat = latitude
     last_long = longitude
 
+    # elevation
     valueElement = kmlDoc.createElement('ele')
     dataElement.appendChild(valueElement)
     alt = float(row['altitude'])
+
+    # set negative values to 0.0
     if alt < 0:
         alt = 0.0
 
     valueText = kmlDoc.createTextNode(str(alt))
     valueElement.appendChild(valueText)
 
+    # date/time needs to be in UTC
     dt = datetime.datetime.strptime(row[''], '%Y%m%d %H:%M:%S:%f')
-    print(row[''])
-    
+    #print(row[''])
+
+    # removes any duplicate dates entries
     if dt == last_date:
         return None
 
@@ -120,6 +125,7 @@ def createTrackDocHeader(gpxDoc):
 
 
 def createGPXTrack(csvReader, fileName, order):
+
     # This constructs the KML document from the CSV file.
     gpxDoc = xml.dom.minidom.Document()
     gpxElement = createTrackDocHeader(gpxDoc)
@@ -132,8 +138,6 @@ def createGPXTrack(csvReader, fileName, order):
     trksegElement = gpxDoc.createElement('trkseg')
     gpxElement.appendChild(trksegElement)
 
-    check_once = False
-
     for row in csvReader:
         placemarkElement = createTrack(gpxDoc, row, order, line_number)
 
@@ -143,33 +147,12 @@ def createGPXTrack(csvReader, fileName, order):
             line_number += 1
 
     kmlFile = open(fileName, 'w')
-    #kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
     kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
-
-
-
-def createKML(csvReader, fileName):
-    # This constructs the KML document from the CSV file.
-    kmlDoc = xml.dom.minidom.Document()
-  
-    kmlElement = kmlDoc.createElementNS('http://earth.google.com/kml/2.2', 'kml')
-    kmlElement.setAttribute('xmlns','http://earth.google.com/kml/2.2')
-    kmlElement = kmlDoc.appendChild(kmlElement)
-    documentElement = kmlDoc.createElement('Document')
-    documentElement = kmlElement.appendChild(documentElement)
-
-    # Skip the header line.
-    next(csvReader)
-
-    for row in csvReader:
-        placemarkElement = createGPXWaypoint(kmlDoc, row, order)
-        documentElement.appendChild(placemarkElement)
-    kmlFile = open(fileName, 'w')
-    kmlFile.write(kmlDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
 
 def main(argv):
     print('Hello, welcome to Q500 FlightLog to GPX converter!')
-    inputfile = ''
+    input_file = ''
+    output_file = 'flightlog.gpx'
     map_type = ''
 
     try:
@@ -185,17 +168,17 @@ def main(argv):
         elif opt in ("-t", "--type"):
             map_type = arg
         elif opt in ("-i", "--ifile"):
-            inputfile = arg
+            input_file = arg
+        elif opt in ("-o", "--ofile"):
+            output_file = arg
 
-    print('Input file is ', inputfile)
+    print('Input file is ', input_file)
 
-    csvreader = csv.DictReader(open(inputfile))
-    order = ['latitude','longitude', 'altitude']
+    csvreader = csv.DictReader(open(input_file))
+    order = ['','latitude','longitude', 'altitude']
 
-    if map_type == 'kml':
-        kml = createKML(csvreader, 'flightlog.kml', order)
-    elif map_type == 'gpx':
-        kml = createGPXTrack(csvreader, 'flightlog.gpx', order)
+    if map_type == 'gpx':
+        createGPXTrack(csvreader, output_file, order)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
