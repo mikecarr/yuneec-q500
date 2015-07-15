@@ -4,7 +4,7 @@ Python script to convert Yuneec Q500+ Flight logs into GPX format. This file can
 ## Running
 
 ````
-python runme.py -i <flightlog file> -t gpx
+python converttoqpx.py -i <flightlog file> -t gpx [ -o <output filename> ]
 ````
 This will create a file named fightlog.gpx, navigate to http://www.doarama.com/ and load GPX file, enjoy!
 
