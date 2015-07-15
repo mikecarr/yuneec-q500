@@ -8,6 +8,11 @@ python converttoqpx.py -i <flightlog file> -t gpx [ -o <output filename> ]
 ````
 This will create a file named fightlog.gpx, navigate to http://www.doarama.com/ and load GPX file, enjoy!
 
+## Virtualenv 
+It creates an environment that has its own installation directories, that doesn’t share libraries with other virtualenv environments (and optionally doesn’t access the globally installed libraries either).
+
+https://virtualenv.pypa.io/en/latest/
+
 ## Debugging
 drop a gpx file here http://nationalmap.gov.au/
 
