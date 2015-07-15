@@ -1,4 +1,3 @@
-import geocoding_for_kml
 import csv
 import xml.dom.minidom
 import sys
@@ -84,7 +83,7 @@ def createTrack(kmlDoc, row, order,line_number):
         return None
 
     last_date = dt
-    zt = time.strftime("2014-%m-%dT%H:%M:%SZ", time.gmtime(time.mktime(dt.timetuple())))
+    zt = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.mktime(dt.timetuple())))
 
     valueElement = kmlDoc.createElement('time')
     dataElement.appendChild(valueElement)
