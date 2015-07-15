@@ -8,6 +8,8 @@ import datetime,time
 
 
 # reference https://developers.google.com/kml/articles/csvtokml
+
+# define globals
 last_date = ''
 last_lat = ''
 last_long = ''
@@ -18,32 +20,6 @@ def insert_line_num():
 def show_help():
     print('runme.py -i <inputfile>')
 
-
-def createPlacemark(kmlDoc, row, order,line_number):
-    # This creates a  element for a row of data.
-    # A row is a dict.
-    dataElement = kmlDoc.createElement('wpt')
-    
-    # Loop through the columns and create a  element for every field that has a value.
-    for key in order:
-
-        if row[key]:
-            dataElement.setAttribute('lat', row['latitude'])
-            dataElement.setAttribute('lon', row['longitude'])
-
-    valueElement = kmlDoc.createElement('ele')
-    dataElement.appendChild(valueElement)
-    valueText = kmlDoc.createTextNode(row['altitude'])
-    valueElement.appendChild(valueText)
-
-    valueElement = kmlDoc.createElement('name')
-    dataElement.appendChild(valueElement)
-    valueText = kmlDoc.createTextNode('Position ' + str(line_number))
-    valueElement.appendChild(valueText)
-
-    print(dataElement.toxml())
-
-    return dataElement
 
 def footToMeter(foot):
     return foot * .305
@@ -67,13 +43,15 @@ def createTrack(kmlDoc, row, order,line_number):
             latitude = row['latitude']
             longitude = row['longitude']
 
+            # cleanup bogus data
             if latitude == '0.0' or longitude == '0.0':
                 return None
 
-            print("Last Lat: " + last_lat + ", latitude:" + latitude)
-            print("Last Long: " + last_long + ", longitude:" + longitude)
-            print("XXXX")
+            #print("Last Lat: " + last_lat + ", latitude:" + latitude)
+            #print("Last Long: " + last_long + ", longitude:" + longitude)
+            #print("XXXX")
 
+            # cleanup duplicates
             if latitude == last_lat and longitude == last_long:
                 last_lat = latitude
                 last_long = longitude
@@ -108,17 +86,13 @@ def createTrack(kmlDoc, row, order,line_number):
     valueText = kmlDoc.createTextNode(str(zt))
     valueElement.appendChild(valueText)
 
-
+    # print out for debugging
     print(dataElement.toxml())
 
     return dataElement
 
 
 def createTrackDocHeader(gpxDoc):
-      #<?xml version="1.0"?>
-  #<gpx creator="GPS Visualizer http://www.gpsvisualizer.com/" version="1.1" 
-  #xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  #xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
 
     gpxElement = gpxDoc.createElementNS('http://www.topografix.com/GPX/1/1', 'gpx')
     gpxElement.setAttribute('xmlns:xsi','http://www.w3.org/2001/XMLSchema-instance')
@@ -144,40 +118,6 @@ def createTrackDocHeader(gpxDoc):
     
     return trkElement
 
-def createDocHeader(gpxDoc):
-      #<?xml version="1.0"?>
-  #<gpx creator="GPS Visualizer http://www.gpsvisualizer.com/" version="1.1" 
-  #xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  #xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
-
-    gpxElement = gpxDoc.createElementNS('http://www.topografix.com/GPX/1/1', 'gpx')
-    gpxElement.setAttribute('xmlns','http://www.topografix.com/GPX/1/1')
-    gpxElement.setAttribute('version','1.1')
-    gpxElement.setAttribute('creator','My custom python script')
-    gpxElement = gpxDoc.appendChild(gpxElement)
-    
-    trkElement = gpxDoc.createElement('trk')
-    gpxElement.appendChild(trkElement)
-
-    trksegElement = gpxDoc.createElement('trkseg')
-    trkElement.appendChild(trksegElement)
-
-    trkptElement = gpxDoc.createElement('trkpt')
-    trkptElement.setAttribute('lat','32.963573' )
-    trkptElement.setAttribute('lon', '-117.064606')
-    trksegElement.appendChild(trkptElement)
-
-    timeElement = gpxDoc.createElement('time')
-    trkptElement.appendChild(timeElement)
-    valueText = gpxDoc.createTextNode('2015-07-14T20:04:31Z')
-    timeElement.appendChild(valueText)
-
-    # metaElement = gpxDoc.createElement('meta')
-    # gpxElement.appendChild(metaElement)
-    # valueText = gpxDoc.createTextNode('Created by my python script for Q500+ flightlogs')
-    # metaElement.appendChild(valueText)
-    return gpxElement
-
 
 def createGPXTrack(csvReader, fileName, order):
     # This constructs the KML document from the CSV file.
@@ -202,37 +142,11 @@ def createGPXTrack(csvReader, fileName, order):
             trksegElement.appendChild(placemarkElement)
             line_number += 1
 
-        # if line_number > 9 and check_once != True:
-        #     trksegElement = gpxDoc.createElement('trkseg')
-        #     gpxElement.appendChild(trksegElement)
-        #     check_once = True
-
-
     kmlFile = open(fileName, 'w')
     #kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
-    kmlFile.write(gpxDoc.toprettyxml())
+    kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
 
 
-def createGPXWaypoint(csvReader, fileName, order):
-    # This constructs the KML document from the CSV file.
-    gpxDoc = xml.dom.minidom.Document()
-    gpxElement = createDocHeader(gpxDoc)
-
-    line_number = 1
-
-    # Skip the header line.
-    next(csvReader)
-
-    for row in csvReader:
-        placemarkElement = createPlacemark(gpxDoc, row, order, line_number)
-        #placemarkElement = createTrack(gpxDoc, row, order, line_number)
-        #print(placemarkElement.toprettyxml)
-        gpxElement.appendChild(placemarkElement)
-        line_number += 1
-
-    kmlFile = open(fileName, 'w')
-    #kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
-    kmlFile.write(gpxDoc.toxml())
 
 def createKML(csvReader, fileName):
     # This constructs the KML document from the CSV file.
@@ -254,7 +168,7 @@ def createKML(csvReader, fileName):
     kmlFile.write(kmlDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
 
 def main(argv):
-    print('Hello')
+    print('Hello, welcome to Q500 FlightLog to GPX converter!')
     inputfile = ''
     map_type = ''
 
