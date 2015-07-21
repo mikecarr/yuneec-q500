@@ -52,8 +52,6 @@ def createTrack(kmlDoc, row, order,line_number):
 
             # cleanup duplicates
             if latitude == last_lat and longitude == last_long:
-                last_lat = latitude
-                last_long = longitude
                 return None
 
             dataElement.setAttribute('lat', latitude)
@@ -148,8 +146,11 @@ def createGPXTrack(csvReader, fileName, order):
     kmlFile = open(fileName, 'w')
     kmlFile.write(gpxDoc.toprettyxml('  ', newl = '\n', encoding = 'utf-8'))
 
+def createDashFile(csvReader, fileName, order):
+    print('creating dash file')
+
 def main(argv):
-    print('Hello, welcome to Q500 FlightLog to GPX converter!')
+    print('Hello, welcome to Q500 FlightLog Converter!')
     input_file = ''
     output_file = 'flightlog.gpx'
     map_type = ''
@@ -178,6 +179,8 @@ def main(argv):
 
     if map_type == 'gpx':
         createGPXTrack(csvreader, output_file, order)
+    elif map_type == 'dash':
+        createDashFile(csvreader, output_file, order)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
