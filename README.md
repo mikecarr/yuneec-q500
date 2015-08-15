@@ -6,9 +6,22 @@ Python script to convert Yuneec Q500+ Flight logs into GPX format. This file can
 ````
 python converttoqpx.py -i <flightlog file> -t gpx [ -o <output filename> ]
 ````
+
+### Yuneec Video conversion (avc to mov)
+
+Install ffmpeg with Brew tools (MAC)
+```
+$ brew install ffmpeg
+```
+
+```
+$ cd <location of your avc files>
+$ convert_video_files.sh
+```
+
 This will create a file named fightlog.gpx, navigate to http://www.doarama.com/ and load GPX file, enjoy!
 
-## Virtualenv 
+## Virtualenv
 It creates an environment that has its own installation directories, that doesn’t share libraries with other virtualenv environments (and optionally doesn’t access the globally installed libraries either).
 
 https://virtualenv.pypa.io/en/latest/
@@ -17,7 +30,7 @@ https://virtualenv.pypa.io/en/latest/
 drop a gpx file here http://nationalmap.gov.au/
 
 ## Visualization Sites
-* http://www.doarama.com/ 
+* http://www.doarama.com/
 * http://www.gpsvisualizer.com/
 * http://maplorer.com/view_gpx.html
 * http://veloroutes.org/upload/ (slow)
